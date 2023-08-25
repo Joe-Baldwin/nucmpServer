@@ -1,8 +1,12 @@
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
-var cookieParser = require('cookie-parser');
+
 var logger = require('morgan');
+const config = require('./config');
+
+const passport = require('passport');
+
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -10,9 +14,10 @@ const campsiteRouter = require('./routes/campsiteRouter');
 const promotionRouter = require('./routes/promotionRouter');
 const partnerRouter = require ('./routes/partnerRoute');
 
+
 const mongoose = require('mongoose');
 
-const url = 'mongodb://localhost:27017/nucampsite';
+const url = config.mongoUrl;
 const connect = mongoose.connect(url, {
     useCreateIndex: true,
     useFindAndModify: false,
@@ -28,6 +33,8 @@ var app = express();
 
 
 
+
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -35,11 +42,22 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+//app.use(cookieParser('15645-41458-51234-46581'));
+
+
+
+app.use(passport.initialize());
+
+
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+
+
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+
 app.use('/campsites', campsiteRouter);
 app.use('/promotions', promotionRouter);
 app.use('/partners', partnerRouter);
